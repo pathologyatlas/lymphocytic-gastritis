@@ -1,42 +1,11 @@
-# template
+# lymphocytic-gastritis
 
 
 
-**template for pathology atlas repositories**
+**lymphocytic-gastritis for pathology atlas repositories**
 
 
-
-```
-see [make-html-WSI](https://github.com/pathologyatlas/make-html-WSI) for more information and [TODO](https://github.com/pathologyatlas/TODO) to add cases
-```
-
-```
-update html files:
-
-<title>TemplateEN templateTR</title>
-
-<meta name="keywords" content="TemplateEN, templateTR, patoloji, atlas, pathology, whole slide image">
-
-<meta name="description" content="TemplateEN templateTR">
-
-```
-
-
-> do not forget to activate github pages for the new repository
-
-
-
-
-```zsh
-
-vips dzsave HE.svs HE
-
-```
-
-
-
-
-```{r language template, echo=FALSE, include=TRUE}
+```{r language lymphocytic-gastritis, echo=FALSE, include=TRUE}
 
 source("./R/language.R")
 
@@ -47,7 +16,7 @@ source("./R/language.R")
 
 ```{asis, echo = (language == "TR")}
 
-## TemplateTR {#sec-template}
+## lenfositik gastrit {#sec-lymphocytic-gastritis}
 
 ```
 
@@ -56,15 +25,15 @@ source("./R/language.R")
 
 ```{asis, echo = (language == "EN")}
 
-## TemplateEN {#sec-template}
+## lymphocytic gastritis {#sec-lymphocytic-gastritis}
 
 ```
 
 ```{r, eval=TRUE, include=FALSE}
-if (!file.exists("./screenshots/template_screenshot.png")) {
+if (!file.exists("./screenshots/lymphocytic-gastritisHE_screenshot.png")) {
 webshot2::webshot(
-  url = "https://images.patolojiatlasi.com/template/HE.html",
-  file = "./screenshots/template_screenshot.png"
+  url = "https://images.patolojiatlasi.com/lymphocytic-gastritis/HE.html",
+  file = "./screenshots/lymphocytic-gastritisHE_screenshot.png"
 )
 }
 
@@ -72,30 +41,114 @@ webshot2::webshot(
 ```
 
 
+```{r, eval=TRUE, include=FALSE}
+if (!file.exists("./screenshots/lymphocytic-gastritisCD3_screenshot.png")) {
+webshot2::webshot(
+  url = "https://images.patolojiatlasi.com/lymphocytic-gastritis/CD3.html",
+  file = "./screenshots/lymphocytic-gastritisCD3_screenshot.png"
+)
+}
+
+
+```
+
+
+```{r, eval=TRUE, include=FALSE}
+if (!file.exists("./screenshots/lymphocytic-gastritisCD8_screenshot.png")) {
+webshot2::webshot(
+  url = "https://images.patolojiatlasi.com/lymphocytic-gastritis/CD8.html",
+  file = "./screenshots/lymphocytic-gastritisCD8_screenshot.png"
+)
+}
+
+
+```
+
+
+```{r, eval=TRUE, include=FALSE}
+if (!file.exists("./screenshots/lymphocytic-gastritisCD20_screenshot.png")) {
+webshot2::webshot(
+  url = "https://images.patolojiatlasi.com/lymphocytic-gastritis/CD20.html",
+  file = "./screenshots/lymphocytic-gastritisCD20_screenshot.png"
+)
+}
+
+
+```
+
+
+
 ```{asis, echo = (language == "TR")}
 
-**templateTR**
+**lenfositik gastrit HE**
 
 
-[![Tam Ekran Görmek İçin Resmi Tıklayın](./screenshots/template_screenshot.png){width="25%"}](https://images.patolojiatlasi.com/template/HE.html) [Tam Ekran Görmek İçin Resmi Tıklayın](https://images.patolojiatlasi.com/template/HE.html)
+[![Tam Ekran Görmek İçin Resmi Tıklayın](./screenshots/lymphocytic-gastritis_screenshotHE.png){width="25%"}](https://images.patolojiatlasi.com/lymphocytic-gastritis/HE.html) [Tam Ekran Görmek İçin Resmi Tıklayın](https://images.patolojiatlasi.com/lymphocytic-gastritis/HE.html)
 
 Mikroskopik görüntüleri inceleyin:
 
-<iframe src="https://images.patolojiatlasi.com/template/HE.html" style="height:600px;width:100%;" data-external="1"></iframe>
+<iframe src="https://images.patolojiatlasi.com/lymphocytic-gastritis/HE.html" style="height:600px;width:100%;" data-external="1"></iframe>
 
 ```
+
+
+
+```{asis, echo = (language == "TR")}
+
+**lenfositik gastrit CD3**
+
+
+[![Tam Ekran Görmek İçin Resmi Tıklayın](./screenshots/lymphocytic-gastritisCD3_screenshot.png){width="25%"}](https://images.patolojiatlasi.com/lymphocytic-gastritis/CD3.html) [Tam Ekran Görmek İçin Resmi Tıklayın](https://images.patolojiatlasi.com/lymphocytic-gastritis/CD3.html)
+
+Mikroskopik görüntüleri inceleyin:
+
+<iframe src="https://images.patolojiatlasi.com/lymphocytic-gastritis/CD3.html" style="height:600px;width:100%;" data-external="1"></iframe>
+
+```
+
+
+
+```{asis, echo = (language == "TR")}
+
+**lenfositik gastrit CD8**
+
+
+[![Tam Ekran Görmek İçin Resmi Tıklayın](./screenshots/lymphocytic-gastritis_screenshotCD8.png){width="25%"}](https://images.patolojiatlasi.com/lymphocytic-gastritis/CD8.html) [Tam Ekran Görmek İçin Resmi Tıklayın](https://images.patolojiatlasi.com/lymphocytic-gastritis/CD8.html)
+
+Mikroskopik görüntüleri inceleyin:
+
+<iframe src="https://images.patolojiatlasi.com/lymphocytic-gastritis/CD8.html" style="height:600px;width:100%;" data-external="1"></iframe>
+
+```
+
+
+```{asis, echo = (language == "TR")}
+
+**lenfositik gastrit CD20**
+
+
+[![Tam Ekran Görmek İçin Resmi Tıklayın](./screenshots/lymphocytic-gastritisCD20_screenshot.png){width="25%"}](https://images.patolojiatlasi.com/lymphocytic-gastritis/CD20.html) [Tam Ekran Görmek İçin Resmi Tıklayın](https://images.patolojiatlasi.com/lymphocytic-gastritis/CD20.html)
+
+Mikroskopik görüntüleri inceleyin:
+
+<iframe src="https://images.patolojiatlasi.com/lymphocytic-gastritis/CD20.html" style="height:600px;width:100%;" data-external="1"></iframe>
+
+```
+
+
+
 
 ```{comment} 
 asis, echo = (language == "TR")
 
-**templateTR**
+**lenfositik gastrit**
 
 
-[![İşaretlenmiş mikroskopik görüntüleri Tam Ekran Görmek İçin Resmi Tıklayın](./screenshots/template_screenshot.png){width="25%"}](https://images.patolojiatlasi.com/template/HE_annotated.html) [İşaretlenmiş mikroskopik görüntüleri Tam Ekran Görmek İçin Resmi Tıklayın](https://images.patolojiatlasi.com/template/HE_annotated.html)
+[![İşaretlenmiş mikroskopik görüntüleri Tam Ekran Görmek İçin Resmi Tıklayın](./screenshots/lymphocytic-gastritis_screenshot.png){width="25%"}](https://images.patolojiatlasi.com/lymphocytic-gastritis/HE_annotated.html) [İşaretlenmiş mikroskopik görüntüleri Tam Ekran Görmek İçin Resmi Tıklayın](https://images.patolojiatlasi.com/lymphocytic-gastritis/HE_annotated.html)
 
 İşaretlenmiş mikroskopik görüntüleri inceleyin:
 
-<iframe src="https://images.patolojiatlasi.com/template/HE_annotated.html" style="height:600px;width:100%;" data-external="1"></iframe>
+<iframe src="https://images.patolojiatlasi.com/lymphocytic-gastritis/HE_annotated.html" style="height:600px;width:100%;" data-external="1"></iframe>
 
 ```
 
@@ -106,20 +159,20 @@ asis, echo = (language == "TR")
 
 
 
-<button id="tani-case-template-btn">Tanıyı Göster</button>
-<div id="answer-template" style="display: none;">templateTR</div>
+<button id="tani-case-lymphocytic-gastritis-btn">Tanıyı Göster</button>
+<div id="answer-lymphocytic-gastritis" style="display: none;">lenfositik gastrit</div>
 
 <script>
-  const showAnswer-templateBtn = document.getElementById('tani-case-template-btn');
-  const answer-template = document.getElementById('answer-template');
+  const showAnswer-lymphocytic-gastritisBtn = document.getElementById('tani-case-lymphocytic-gastritis-btn');
+  const answer-lymphocytic-gastritis = document.getElementById('answer-lymphocytic-gastritis');
 
-  showAnswer-templateBtn.addEventListener('click', () => {
-    if (answer-template.style.display === 'none') {
-      answer-template.style.display = 'block';
-      showAnswer-templateBtn.textContent = 'Tanıyı Gizle';
+  showAnswer-lymphocytic-gastritisBtn.addEventListener('click', () => {
+    if (answer-lymphocytic-gastritis.style.display === 'none') {
+      answer-lymphocytic-gastritis.style.display = 'block';
+      showAnswer-lymphocytic-gastritisBtn.textContent = 'Tanıyı Gizle';
     } else {
-      answer-template.style.display = 'none';
-      showAnswer-templateBtn.textContent = 'Tanıyı Göster';
+      answer-lymphocytic-gastritis.style.display = 'none';
+      showAnswer-lymphocytic-gastritisBtn.textContent = 'Tanıyı Göster';
     }
   });
 </script>
@@ -136,13 +189,13 @@ asis, echo = (language == "TR")
 
 ```{asis, echo = (language == "EN")}
 
-**templateEN**
+**lymphocytic gastritis**
 
-[![Click for Full Screen WSI](./screenshots/template_screenshot.png){width="25%"}](https://images.patolojiatlasi.com/template/HE.html) [Click for Full Screen WSI](https://images.patolojiatlasi.com/template/HE.html)
+[![Click for Full Screen WSI](./screenshots/lymphocytic-gastritis_screenshot.png){width="25%"}](https://images.patolojiatlasi.com/lymphocytic-gastritis/HE.html) [Click for Full Screen WSI](https://images.patolojiatlasi.com/lymphocytic-gastritis/HE.html)
 
 See Microscopy with viewer: 
 
-<iframe src="https://images.patolojiatlasi.com/template/HE.html" style="height:600px;width:100%;" data-external="1"></iframe>
+<iframe src="https://images.patolojiatlasi.com/lymphocytic-gastritis/HE.html" style="height:600px;width:100%;" data-external="1"></iframe>
 
 ```
 
@@ -150,14 +203,14 @@ See Microscopy with viewer:
 ```{comment}
 asis, echo = (language == "EN")
 
-**templateEN**
+**lymphocytic gastritis**
 
-[![Click for Full Screen Annotated WSI](./screenshots/template_screenshot.png){width="25%"}](https://images.patolojiatlasi.com/template/HE_annotated.html) [Click for Full Screen Annotated WSI](https://images.patolojiatlasi.com/template/HE_annotated.html)
+[![Click for Full Screen Annotated WSI](./screenshots/lymphocytic-gastritis_screenshot.png){width="25%"}](https://images.patolojiatlasi.com/lymphocytic-gastritis/HE_annotated.html) [Click for Full Screen Annotated WSI](https://images.patolojiatlasi.com/lymphocytic-gastritis/HE_annotated.html)
 
 
 See Annotated Microscopy with viewer: 
 
-<iframe src="https://images.patolojiatlasi.com/template/HE_annotated.html" style="height:600px;width:100%;" data-external="1"></iframe>
+<iframe src="https://images.patolojiatlasi.com/lymphocytic-gastritis/HE_annotated.html" style="height:600px;width:100%;" data-external="1"></iframe>
 
 
 
@@ -166,20 +219,20 @@ See Annotated Microscopy with viewer:
 ```{comment}
 asis, echo = (language == "EN")
 
-<button id="dx-case-template-btn">Show the Diagnosis</button>
-<div id="answer-template" style="display: none;">templateEN</div>
+<button id="dx-case-lymphocytic-gastritis-btn">Show the Diagnosis</button>
+<div id="answer-lymphocytic-gastritis" style="display: none;">lymphocytic gastritis</div>
 
 <script>
-  const showAnswer-templateBtn = document.getElementById('dx-case-template-btn');
-  const answer-template = document.getElementById('answer-template');
+  const showAnswer-lymphocytic-gastritisBtn = document.getElementById('dx-case-lymphocytic-gastritis-btn');
+  const answer-lymphocytic-gastritis = document.getElementById('answer-lymphocytic-gastritis');
 
-  showAnswer-templateBtn.addEventListener('click', () => {
-    if (answer-template.style.display === 'none') {
-      answer-template.style.display = 'block';
-      showAnswer-templateBtn.textContent = 'Hide the Diagnosis';
+  showAnswer-lymphocytic-gastritisBtn.addEventListener('click', () => {
+    if (answer-lymphocytic-gastritis.style.display === 'none') {
+      answer-lymphocytic-gastritis.style.display = 'block';
+      showAnswer-lymphocytic-gastritisBtn.textContent = 'Hide the Diagnosis';
     } else {
-      answer-template.style.display = 'none';
-      showAnswer-templateBtn.textContent = 'Show the Diagnosis';
+      answer-lymphocytic-gastritis.style.display = 'none';
+      showAnswer-lymphocytic-gastritisBtn.textContent = 'Show the Diagnosis';
     }
   });
 </script>
