@@ -77,6 +77,10 @@ webshot2::webshot(
 ```
 
 
+<iframe src="https://images.patolojiatlasi.com/lymphocytic-gastritis/all.html" style="height:600px;width:100%;" data-external="1"></iframe>
+
+
+
 
 ```{asis, echo = (language == "TR")}
 
