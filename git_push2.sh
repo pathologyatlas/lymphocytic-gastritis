@@ -1,6 +1,6 @@
 #!/bin/bash
 
-files=( $(find ./CD8_files -type f) )   # Find all files in the current directory and subdirectories
+files=( $(find ./ -type f) )   # Find all files in the current directory and subdirectories
 batch_size=2000                 # Define the batch size
 total_files=${#files[@]}       # Get total number of files
 batches=$((($total_files + $batch_size - 1) / $batch_size))
