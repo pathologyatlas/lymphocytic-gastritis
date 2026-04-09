@@ -80,6 +80,26 @@ webshot2::webshot(
 <iframe src="https://images.patolojiatlasi.com/lymphocytic-gastritis/all.html" style="height:600px;width:100%;" data-external="1"></iframe>
 
 
+```{asis, echo = (language == "TR")}
+
+### Görüntüleme Modları {-}
+
+- [Tüm Boyamalar (Sıralı)](https://images.patolojiatlasi.com/lymphocytic-gastritis/all.html) - HE, CD3, CD8, CD20 boyamalarını sırayla inceleyin
+- [Yan Yana Karşılaştırma](https://images.patolojiatlasi.com/lymphocytic-gastritis/sidebyside.html) - 2, 3 veya 4 boyamayı eş zamanlı senkronize panellerde görüntüleyin
+- [Perde Karşılaştırma](https://images.patolojiatlasi.com/lymphocytic-gastritis/curtain.html) - İki boyamayı sürgülü perde ile üst üste karşılaştırın, hizalama araçları ile
+
+```
+
+
+```{asis, echo = (language == "EN")}
+
+### Viewing Modes {-}
+
+- [All Stains (Sequential)](https://images.patolojiatlasi.com/lymphocytic-gastritis/all.html) - Browse HE, CD3, CD8, CD20 stains in sequence
+- [Side by Side Comparison](https://images.patolojiatlasi.com/lymphocytic-gastritis/sidebyside.html) - View 2, 3, or 4 stains in synchronized panels
+- [Curtain Comparison](https://images.patolojiatlasi.com/lymphocytic-gastritis/curtain.html) - Overlay two stains with a draggable slider, with alignment tools
+
+```
 
 
 ```{asis, echo = (language == "TR")}
