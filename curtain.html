@@ -20,6 +20,7 @@
 
   <script src="https://images.patolojiatlasi.com/openseadragon/openseadragon.min.js"></script>
   <script src="./openseadragon/openseadragon.min.js"></script>
+  <script src="./openseadragon/openseadragon-scalebar.js"></script>
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -302,6 +303,23 @@
       showNavigationControl: false,
       showNavigator: false,
       gestureSettingsMouse: { clickToZoom: false }
+    });
+
+    // Scalebar on LEFT viewer only. In align mode the two sides can drift out
+    // of lock-step (different zoom ratios), so attaching to one viewer is the
+    // only honest option — it reflects the scale of whatever stain is on the left.
+    viewerLeft.scalebar({
+      type: OpenSeadragon.ScalebarType.MICROSCOPY,
+      pixelsPerMeter: 1.98255e+06,
+      minWidth: '120px',
+      location: OpenSeadragon.ScalebarLocation.BOTTOM_RIGHT,
+      color: 'black',
+      fontColor: 'black',
+      backgroundColor: 'rgba(255,255,255,0.7)',
+      barThickness: 3,
+      fontSize: '12px',
+      xOffset: 14,
+      yOffset: 14
     });
 
     // --- Viewport sync with offset ---

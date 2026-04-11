@@ -20,6 +20,7 @@
 
   <script src="https://images.patolojiatlasi.com/openseadragon/openseadragon.min.js"></script>
   <script src="./openseadragon/openseadragon.min.js"></script>
+  <script src="./openseadragon/openseadragon-scalebar.js"></script>
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -180,6 +181,31 @@
         gestureSettingsMouse: { clickToZoom: false }
       }));
     }
+
+    // Scalebar on each panel. All viewers share pan/zoom via the sync code,
+    // so each bar reflects the same scale; per-panel display makes the unit
+    // obvious regardless of which panel the user focuses on.
+    function attachScalebar(v) {
+      v.scalebar({
+        type: OpenSeadragon.ScalebarType.MICROSCOPY,
+        pixelsPerMeter: 1.98255e+06,
+        minWidth: '100px',
+        location: OpenSeadragon.ScalebarLocation.BOTTOM_RIGHT,
+        color: 'black',
+        fontColor: 'black',
+        backgroundColor: 'rgba(255,255,255,0.7)',
+        barThickness: 2,
+        fontSize: '11px',
+        xOffset: 10,
+        yOffset: 10
+      });
+    }
+    viewers.forEach(function (v) {
+      // Attach scalebar on each stain switch as well (open event) so it
+      // persists after .open(tileSources[stain]).
+      attachScalebar(v);
+      v.addHandler('open', function () { attachScalebar(v); });
+    });
 
     // --- Synchronized pan & zoom ---
     var syncing = false;
