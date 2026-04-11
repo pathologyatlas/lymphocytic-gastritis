@@ -25,6 +25,7 @@
   <script src="https://images.patolojiatlasi.com/openseadragon/openseadragon.min.js"></script>
   <script src="./openseadragon/openseadragon.min.js"></script>
   <script src="./openseadragon/openseadragon-scalebar.js"></script>
+  <script src="./openseadragon/osd-middle-pan.js"></script>
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -32,6 +33,10 @@
                  font-family: Arial, sans-serif; overflow: hidden; }
 
     #openseadragon1 { width: 100%; height: 100%; }
+
+    /* Visual feedback while middle-click pan-lock is active. Pointer Lock
+       hides the cursor, so the viewer gets a subtle blue outline instead. */
+    .mid-pan { outline: 2px solid rgba(108, 204, 255, 0.7); outline-offset: -2px; }
 
     /* ---- Toolbar (filters + magnifier) ---- */
     #toolbar {
@@ -126,6 +131,13 @@
       <button id="f-reset">Reset</button>
     </div>
 
+    <h4>Orientation</h4>
+    <div class="ctrl-row">
+      <label>Rotate</label>
+      <input type="range" id="f-rotate" min="0" max="360" value="0" step="1">
+      <span id="v-rotate">0&deg;</span>
+    </div>
+
     <h4>Magnifier Lens</h4>
     <div style="font-size:10px;color:#9ab;margin:-2px 0 2px;line-height:1.35">
       Click a zoom to show the lens, click again to hide. Then move the cursor over the slide.
@@ -203,6 +215,12 @@
       yOffset: 14
     });
 
+    // Middle-click pan-lock (Sectra "stage drive" via Pointer Lock API).
+    // See openseadragon/osd-middle-pan.js. Middle-click to enter, any click
+    // or Escape to exit. Cursor is hidden while active; the `.mid-pan` CSS
+    // class on the container provides a blue outline as visual feedback.
+    OSDMiddlePan(viewer);
+
     // =====================================================================
     // CSS Filters (brightness / contrast / saturation / gamma / invert)
     // ---------------------------------------------------------------------
@@ -275,6 +293,22 @@
       document.getElementById('f-invert').classList.remove('active');
       document.getElementById('f-gray').classList.remove('active');
       applyFilters();
+      // Also reset rotation back to 0° (the slider updates via the viewer rotate event)
+      viewer.viewport.setRotation(0);
+    });
+
+    // ---- Rotation slider (two-way bound to OSD's built-in rotation) ----
+    // Dragging the slider rotates the viewer; clicking OSD's built-in rotate
+    // controls keeps the slider in sync via the viewer's `rotate` event.
+    var rotSlider = document.getElementById('f-rotate');
+    var rotVal = document.getElementById('v-rotate');
+    rotSlider.addEventListener('input', function () {
+      viewer.viewport.setRotation(parseFloat(this.value) || 0);
+    });
+    viewer.addHandler('rotate', function (e) {
+      var deg = ((Math.round(e.degrees) % 360) + 360) % 360;
+      rotSlider.value = deg;
+      rotVal.textContent = deg + '\u00B0';
     });
 
     // =====================================================================
@@ -380,73 +414,6 @@
     // Initialize the magnifier viewer eagerly. Lazy init while the container
     // was display:none gave OSD a 0×0 canvas and nothing ever rendered.
     ensureMagnifier();
-
-    // =====================================================================
-    // Middle-click pan-lock (microscope-style "stage drive")
-    // ---------------------------------------------------------------------
-    // ONE middle click LOCKS pan mode: subsequent mouse motion translates
-    // the image with the cursor, and the image only moves WHILE the mouse
-    // is moving. Stop the mouse → image freezes. Click middle again, click
-    // any other button, or press Escape to unlock. Mimics a pathologist
-    // nudging a slide on a microscope stage rather than ImageScope's
-    // drag-throw model. Uses per-frame deltas, so it follows the cursor
-    // even after hitting OSD's edge constraints.
-    // =====================================================================
-    var panLockActive = false;
-    var panLockLastX = null, panLockLastY = null;
-
-    function enterPanLock() {
-      panLockActive = true;
-      panLockLastX = null;
-      panLockLastY = null;
-      osdEl.style.cursor = 'move';
-    }
-
-    function exitPanLock() {
-      panLockActive = false;
-      panLockLastX = null;
-      panLockLastY = null;
-      osdEl.style.cursor = '';
-    }
-
-    osdEl.addEventListener('mousedown', function (e) {
-      if (e.button === 1) { // middle button
-        e.preventDefault();
-        e.stopPropagation();
-        if (panLockActive) exitPanLock();
-        else enterPanLock();
-        return;
-      }
-      // Any other click while locked exits the mode so OSD's normal
-      // left-drag still works afterwards.
-      if (panLockActive) exitPanLock();
-    });
-
-    // Suppress the default browser middle-click auto-scroll cursor.
-    osdEl.addEventListener('auxclick', function (e) {
-      if (e.button === 1) e.preventDefault();
-    });
-
-    osdEl.addEventListener('mousemove', function (e) {
-      if (!panLockActive) return;
-      if (panLockLastX !== null) {
-        var dx = e.clientX - panLockLastX;
-        var dy = e.clientY - panLockLastY;
-        if (dx !== 0 || dy !== 0) {
-          // Pan camera OPPOSITE to mouse delta so the image visually moves
-          // WITH the cursor. Per-frame delta survives edge constraints.
-          var delta = viewer.viewport.deltaPointsFromPixels(new OpenSeadragon.Point(dx, dy));
-          var c = viewer.viewport.getCenter();
-          viewer.viewport.panTo(new OpenSeadragon.Point(c.x - delta.x, c.y - delta.y), true);
-        }
-      }
-      panLockLastX = e.clientX;
-      panLockLastY = e.clientY;
-    });
-
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && panLockActive) exitPanLock();
-    });
 
     // =====================================================================
     // Browse heatmap
