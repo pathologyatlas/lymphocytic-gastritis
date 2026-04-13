@@ -26,6 +26,7 @@
   <script src="./openseadragon/openseadragon.min.js"></script>
   <script src="./openseadragon/openseadragon-scalebar.js"></script>
   <script src="./openseadragon/osd-middle-pan.js"></script>
+  <script src="./openseadragon/osd-keyboard-nav.js"></script>
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -147,6 +148,15 @@
       <button data-mag="4">4&times;</button>
       <button data-mag="8">8&times;</button>
     </div>
+
+    <h4>Keyboard Navigation</h4>
+    <div style="font-size:10px;color:#9ab;margin:-2px 0 2px;line-height:1.35">
+      WASD / Arrow keys to pan, Z / X to zoom.
+    </div>
+    <div class="ctrl-row"><label>Pan Speed</label>
+      <input type="range" id="f-pan" min="1" max="10" value="5"><span id="v-pan">5</span></div>
+    <div class="ctrl-row"><label>Zoom Speed</label>
+      <input type="range" id="f-zmspd" min="1" max="10" value="5"><span id="v-zmspd">5</span></div>
 
     <h4>Browse Heatmap</h4>
     <div style="font-size:10px;color:#9ab;margin:-2px 0 2px;line-height:1.35">
@@ -295,6 +305,10 @@
       applyFilters();
       // Also reset rotation back to 0° (the slider updates via the viewer rotate event)
       viewer.viewport.setRotation(0);
+      // Reset keyboard nav speeds
+      document.getElementById('f-pan').value = 5;   document.getElementById('v-pan').textContent = '5';
+      document.getElementById('f-zmspd').value = 5;  document.getElementById('v-zmspd').textContent = '5';
+      if (typeof kbNav !== 'undefined') { kbNav.panStep = 0.0025; kbNav.zoomFactor = 1.01; }
     });
 
     // ---- Rotation slider (two-way bound to OSD's built-in rotation) ----
@@ -576,10 +590,16 @@
       if (hmCtx) hmCtx.clearRect(0, 0, hmW, hmH);
     });
 
-    // ---- Keyboard zoom (Z / X) ----
-    document.addEventListener("keydown", function (event) {
-      if (event.keyCode === 90) viewer.viewport.zoomBy(1.2);
-      else if (event.keyCode === 88) viewer.viewport.zoomBy(0.8);
+    // ---- Keyboard navigation (WASD/arrows pan + Z/X zoom) ----
+    var kbNav = OSDKeyboardNav(viewer);
+
+    document.getElementById('f-pan').addEventListener('input', function () {
+      kbNav.panStep = this.value * 0.0005;
+      document.getElementById('v-pan').textContent = this.value;
+    });
+    document.getElementById('f-zmspd').addEventListener('input', function () {
+      kbNav.zoomFactor = 1 + this.value * 0.002;
+      document.getElementById('v-zmspd').textContent = this.value;
     });
 
   </script>
