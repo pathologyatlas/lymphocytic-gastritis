@@ -25,6 +25,7 @@
   <script src="./openseadragon/openseadragon-scalebar.js"></script>
   <script src="./openseadragon/osd-middle-pan.js"></script>
   <script src="./openseadragon/osd-keyboard-nav.js"></script>
+  <script src="./openseadragon/osd-autonav.js?v=9"></script>
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -153,6 +154,26 @@
       <input type="range" id="f-pan" min="1" max="10" value="5"><span id="v-pan">5</span></div>
     <div class="ctrl-row"><label>Zoom Speed</label>
       <input type="range" id="f-zmspd" min="1" max="10" value="5"><span id="v-zmspd">5</span></div>
+
+    <h4>Auto Navigation</h4>
+    <div style="font-size:10px;color:#9ab;margin:-2px 0 2px;line-height:1.35">
+      Sweeps the tissue from the current position in a serpentine path, gliding past empty glass to the next tissue. While it runs, W/S (or &uarr;/&darr;) jump to the row above/below and reverse, A/D (&larr;/&rarr;) set the travel direction (roles swap in Columns mode), N = next pass. Drag or zoom freely; it waits for you. Stop or Esc ends it.
+    </div>
+    <div class="btn-row">
+      <button id="an-start">Start</button>
+      <button id="an-rows" class="active">Rows</button>
+      <button id="an-cols">Columns</button>
+      <button id="an-rev">Reverse</button>
+    </div>
+    <div class="btn-row">
+      <button id="an-next" title="Skip the rest of this row/column and glide to the next one (shortcut: N)">Next row/column (N)</button>
+    </div>
+    <div class="ctrl-row"><label>Speed</label>
+      <input type="range" id="an-speed" min="0.5" max="6" step="0.1" value="2"><span id="v-an-speed">2.0</span></div>
+    <div class="ctrl-row" title="How much consecutive rows/columns overlap. Passes are spaced by the central half of the screen, where attention is, so even 0% means the middle of the screen covers everything."><label>Overlap</label>
+      <input type="range" id="an-overlap" min="0" max="50" step="5" value="10"><span id="v-an-overlap">10%</span></div>
+    <div class="ctrl-row" title="0 = sweep everything. Higher = stricter about what counts as tissue, so more glass is skipped. Skipped areas flash blue on the thumbnail."><label>Skip glass</label>
+      <input type="range" id="an-skip" min="0" max="10" step="1" value="3"><span id="v-an-skip">3</span></div>
 
     <h4>Browse Heatmap</h4>
     <div style="font-size:10px;color:#9ab;margin:-2px 0 2px;line-height:1.35">
@@ -293,6 +314,13 @@
       document.getElementById('f-pan').value = 5;   document.getElementById('v-pan').textContent = '5';
       document.getElementById('f-zmspd').value = 5;  document.getElementById('v-zmspd').textContent = '5';
       if (typeof kbNav !== 'undefined') { kbNav.panStep = 0.0025; kbNav.zoomFactor = 1.01; }
+      // Reset auto-nav speed (direction/reverse are left as chosen)
+      document.getElementById('an-speed').value = 2; document.getElementById('v-an-speed').textContent = '2.0';
+      if (typeof autoNav !== 'undefined') autoNav.speed = 2 * 0.15;
+      document.getElementById('an-skip').value = 3; document.getElementById('v-an-skip').textContent = '3';
+      if (typeof autoNav !== 'undefined') autoNav.setSkipStrength(3);
+      document.getElementById('an-overlap').value = 10; document.getElementById('v-an-overlap').textContent = '10%';
+      if (typeof autoNav !== 'undefined') autoNav.overlap = 0.1;
     });
 
     // ---- Rotation slider (two-way bound to OSD's built-in rotation) ----
@@ -397,6 +425,12 @@
       if (magActive) updateMagnifier(lastMouse.x, lastMouse.y);
     });
 
+    // Sliders keep keyboard focus after use, which would send the arrow keys
+    // to the slider instead of the viewer. Drop focus once the value is set.
+    document.querySelectorAll('#toolbar input[type="range"]').forEach(function (el) {
+      el.addEventListener('change', function () { this.blur(); });
+    });
+
     document.getElementById('toolbar-collapse').addEventListener('click', function () {
       var tb = document.getElementById('toolbar');
       tb.classList.toggle('collapsed');
@@ -468,7 +502,11 @@
       // skip — that means the user is in transit, not "reviewing" anything.
       var center = viewer.viewport.getCenter();
       var zoom = viewer.viewport.getZoom();
-      if (hmLastCenter !== null) {
+      // The auto-nav sweep is always moving but IS deliberate viewing, so
+      // count every tick while it runs (except its glides over empty glass)
+      // instead of applying the transit gate.
+      var sweeping = typeof autoNav !== 'undefined' && autoNav.running && !autoNav.transiting;
+      if (hmLastCenter !== null && !sweeping) {
         var dx = center.x - hmLastCenter.x;
         var dy = center.y - hmLastCenter.y;
         var dist = Math.sqrt(dx * dx + dy * dy);
@@ -573,6 +611,50 @@
     document.getElementById('f-zmspd').addEventListener('input', function () {
       kbNav.zoomFactor = 1 + this.value * 0.002;
       document.getElementById('v-zmspd').textContent = this.value;
+    });
+
+    // ---- Auto navigation (serpentine sweep of the whole slide) ----
+    // See openseadragon/osd-autonav.js. Start sweeps from the current
+    // position toward the far corner, gliding between passes like a motorised
+    // stage and gliding past empty glass. Path maths uses the central half of
+    // the screen (where attention is). Speed is in screen widths per second
+    // (zoom-invariant). Manual pan/zoom is absorbed; Stop/Esc ends it.
+    var autoNav = OSDAutoNav(viewer, { speed: 2 * 0.15 });
+    var anStart = document.getElementById('an-start');
+    autoNav.onStop = function () {
+      anStart.textContent = 'Start';
+      anStart.classList.remove('active');
+    };
+    anStart.addEventListener('click', function () {
+      autoNav.toggle();
+      if (autoNav.running) { this.textContent = 'Stop'; this.classList.add('active'); }
+    });
+    document.getElementById('an-rows').addEventListener('click', function () {
+      autoNav.direction = 'rows';
+      this.classList.add('active');
+      document.getElementById('an-cols').classList.remove('active');
+    });
+    document.getElementById('an-cols').addEventListener('click', function () {
+      autoNav.direction = 'columns';
+      this.classList.add('active');
+      document.getElementById('an-rows').classList.remove('active');
+    });
+    document.getElementById('an-rev').addEventListener('click', function () {
+      autoNav.reverse = !autoNav.reverse;
+      this.classList.toggle('active', autoNav.reverse);
+    });
+    document.getElementById('an-speed').addEventListener('input', function () {
+      autoNav.speed = this.value * 0.15;
+      document.getElementById('v-an-speed').textContent = parseFloat(this.value).toFixed(1);
+    });
+    document.getElementById('an-next').addEventListener('click', function () { autoNav.nextPass(); });
+    document.getElementById('an-overlap').addEventListener('input', function () {
+      autoNav.overlap = this.value / 100;
+      document.getElementById('v-an-overlap').textContent = this.value + '%';
+    });
+    document.getElementById('an-skip').addEventListener('input', function () {
+      autoNav.setSkipStrength(this.value);
+      document.getElementById('v-an-skip').textContent = this.value === '0' ? 'Off' : this.value;
     });
 
   </script>
