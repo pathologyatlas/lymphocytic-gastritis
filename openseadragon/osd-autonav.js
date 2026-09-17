@@ -68,11 +68,48 @@ var OSDAutoNav = (function () {
       reverse: !!opts.reverse,
       skipStrength: opts.skipStrength == null ? 3 : opts.skipStrength,
       onStop: opts.onStop || null,
+      onPause: opts.onPause || null,
+      onResume: opts.onResume || null,
       running: false,
+      paused: false,
       transiting: false,
       mask: null, // { w, h, data: Uint8Array } 1 = tissue, in image-normalised coords
-      start: null, stop: null, toggle: null, nextPass: null, steer: null, destroy: null, setSkipStrength: null, showMask: null
+      start: null, stop: null, pause: null, resume: null, togglePause: null, toggle: null,
+      nextPass: null, steer: null, destroy: null, setSkipStrength: null, showMask: null
     };
+
+    var hudEl = null;
+    function ensureHud() {
+      if (hudEl || typeof document === 'undefined' || !document.createElement) return;
+      hudEl = document.createElement('div');
+      hudEl.id = 'osd-autonav-hud';
+      hudEl.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:95;' +
+        'background:rgba(15,23,42,0.88);color:#fff;padding:6px 14px;border-radius:20px;' +
+        'font-family:Arial,sans-serif;font-size:12px;display:none;align-items:center;gap:10px;' +
+        'box-shadow:0 4px 16px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.15);pointer-events:auto;user-select:none;backdrop-filter:blur(4px);';
+      var container = (viewer && viewer.container) ? viewer.container : document.body;
+      if (container && container.appendChild) container.appendChild(hudEl);
+    }
+
+    function updateHud() {
+      if (!hudEl) ensureHud();
+      if (!hudEl) return;
+      if (!nav.running) {
+        hudEl.style.display = 'none';
+        return;
+      }
+      hudEl.style.display = 'flex';
+      var modeLabel = rows ? 'Rows' : 'Cols';
+      var statusText = nav.paused
+        ? '<span style="color:#f59e0b;font-weight:bold;">⏸ Paused</span>'
+        : '<span style="color:#38bdf8;font-weight:bold;">▶ Sweeping (' + modeLabel + ')</span>';
+
+      hudEl.innerHTML = statusText +
+        '<span style="color:#64748b;">|</span>' +
+        '<span style="color:#cbd5e1;">[Space] ' + (nav.paused ? 'Resume' : 'Pause') + '</span>' +
+        '<span style="color:#cbd5e1;">[N] Next</span>' +
+        '<span style="color:#cbd5e1;">[Esc] Stop</span>';
+    }
 
     var animId = null;
     var lastT = 0;
@@ -135,7 +172,9 @@ var OSDAutoNav = (function () {
       lastSet = null;
       userUntil = 0;
       nav.running = true;
+      nav.paused = false;
       lastT = 0;
+      updateHud();
       if (!animId) animId = requestAnimationFrame(tick);
     }
 
@@ -197,6 +236,11 @@ var OSDAutoNav = (function () {
     function tick(t) {
       animId = null;
       if (!nav.running) return;
+      if (nav.paused) {
+        lastT = t;
+        animId = requestAnimationFrame(tick);
+        return;
+      }
       var dt = lastT ? Math.min((t - lastT) / 1000, 0.1) : 0;
       lastT = t;
 
@@ -315,10 +359,33 @@ var OSDAutoNav = (function () {
     function stop() {
       if (!nav.running) return;
       nav.running = false;
+      nav.paused = false;
       nav.transiting = false;
       transit = null;
       if (animId) { cancelAnimationFrame(animId); animId = null; }
+      updateHud();
       if (nav.onStop) nav.onStop();
+    }
+
+    function pause() {
+      if (!nav.running || nav.paused) return;
+      nav.paused = true;
+      updateHud();
+      if (nav.onPause) nav.onPause();
+    }
+
+    function resume() {
+      if (!nav.running || !nav.paused) return;
+      nav.paused = false;
+      lastT = 0;
+      updateHud();
+      if (nav.onResume) nav.onResume();
+      if (!animId) animId = requestAnimationFrame(tick);
+    }
+
+    function togglePause() {
+      if (!nav.running) { start(); return; }
+      nav.paused ? resume() : pause();
     }
 
     // ---- Tissue mask: is the given viewport rect (normalised coords) blank? ----
@@ -460,6 +527,12 @@ var OSDAutoNav = (function () {
       var tg = e.target;
       if (tg && (tg.tagName === 'INPUT' || tg.tagName === 'TEXTAREA' || tg.isContentEditable)) return;
       var k = e.key.toLowerCase();
+      if (e.key === ' ' || e.code === 'Space') {
+        e.preventDefault();
+        e.stopPropagation();
+        togglePause();
+        return;
+      }
       if (k === 'n') { e.preventDefault(); nextPass(); return; }
       var dir = STEER_KEYS[k];
       if (!dir) return;
@@ -474,6 +547,9 @@ var OSDAutoNav = (function () {
 
     nav.start = start;
     nav.stop = stop;
+    nav.pause = pause;
+    nav.resume = resume;
+    nav.togglePause = togglePause;
     nav.nextPass = nextPass;
     nav.steer = steer;
     nav.setSkipStrength = setSkipStrength;
@@ -481,6 +557,7 @@ var OSDAutoNav = (function () {
     nav.toggle = function () { nav.running ? stop() : start(); };
     nav.destroy = function () {
       stop();
+      if (hudEl && hudEl.parentNode) hudEl.parentNode.removeChild(hudEl);
       viewer.removeHandler('open', buildMask);
       document.removeEventListener('keydown', onKeyDown, true);
     };

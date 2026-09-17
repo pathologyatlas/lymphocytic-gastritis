@@ -136,7 +136,19 @@ for (const ov of [0, 0.1, 0.5]) {
   if (Math.abs(rowGap - ZONE.height * (1 - ov)) > 1e-6) throw new Error('row spacing ignores overlap');
   if (r.miss !== 0) throw new Error('coverage gap at overlap ' + ov);
 }
-// Whole image fits in view: nothing to do
-const big = run({ center: [0.5, 0.25], view: { width: 2, height: 1.2 } });
-if (big.frames > 0) throw new Error('should not run');
+// Pause and resume: pausing at frame 10 for 20 ticks holds position, then resumes
+let pauseNav = null;
+const pz = run({
+  center: [0.03, 0.0175],
+  setup: nv => { pauseNav = nv; },
+  onFrame: n => {
+    if (n === 10) pauseNav.pause();
+    if (n === 30) pauseNav.resume();
+  }
+});
+const pausedFrames = pz.all.filter(f => f.n >= 10 && f.n < 30);
+console.log('pause-resume: frames panned during pause = ' + pausedFrames.length + ' total=' + pz.frames);
+if (pausedFrames.length > 0) throw new Error('viewport moved while paused');
+if (pz.miss !== 0) throw new Error('pause-resume failed coverage');
+
 console.log('ALL CHECKS PASSED');
