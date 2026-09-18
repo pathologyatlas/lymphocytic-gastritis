@@ -1,0 +1,45 @@
+{
+  "format": "atlas-regions/1",
+  "slide": "lymphocytic-gastritis/HE",
+  "size": { "width": 79923, "height": 42180 },
+  "mpp": 0.263018,
+  "source": { "tool": "demo placeholder (not exported from QuPath)", "exported": "2026-09-18" },
+  "regions": [
+    {
+      "id": "r1",
+      "label_tr": "İntraepitelyal lenfositler",
+      "label_en": "Intraepithelial lymphocytes",
+      "x": 25000, "y": 14000, "width": 2200, "height": 1800,
+      "note_tr": "Örnek/yer tutucu koordinat — gerçek bir anotasyon değildir.",
+      "note_en": "Sample/placeholder coordinates — not a real annotation.",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[25000, 14000], [27200, 14000], [27200, 15800], [25000, 15800], [25000, 14000]]]
+      }
+    },
+    {
+      "id": "r2",
+      "label_tr": "Lenfoid agregat",
+      "label_en": "Lymphoid aggregate",
+      "x": 34000, "y": 18000, "width": 3600, "height": 3000,
+      "note_tr": "Örnek/yer tutucu koordinat — gerçek bir anotasyon değildir.",
+      "note_en": "Sample/placeholder coordinates — not a real annotation.",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[34000, 18000], [37600, 18000], [37600, 21000], [34000, 21000], [34000, 18000]]]
+      }
+    },
+    {
+      "id": "r3",
+      "label_tr": "Yüzey epiteli",
+      "label_en": "Surface epithelium",
+      "x": 44000, "y": 12000, "width": 4200, "height": 1300,
+      "note_tr": "Örnek/yer tutucu koordinat — gerçek bir anotasyon değildir.",
+      "note_en": "Sample/placeholder coordinates — not a real annotation.",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[44000, 12000], [48200, 12000], [48200, 13300], [44000, 13300], [44000, 12000]]]
+      }
+    }
+  ]
+}
